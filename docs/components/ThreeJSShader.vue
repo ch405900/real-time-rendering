@@ -5,14 +5,14 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from "vue";
 import * as THREE from "three";
-import "./application";
-import Application from "./application";
+import { ApplicationBuilder } from "./application";
 
 const container = ref(null);
 
 onMounted(async () => {
-  const app = new Application();
-
+  const builder = new ApplicationBuilder(container.value);
+  builder.orbitControls().transformControls();
+  const app = builder.build();
   const geometry = new THREE.BoxGeometry();
 
   const vertexShader = await import("../shaders/vertex.glsl?raw").then((m) => m.default);
@@ -21,20 +21,28 @@ onMounted(async () => {
   );
 
   const material = new THREE.ShaderMaterial({
-    glslVersion: THREE.GLSL3,
+    glslVersion: app.isWebGL2() ? THREE.GLSL3 : THREE.GLSL1,
+    defines: {
+      USE_UV: false,
+      USE_COLOR: false,
+    },
     vertexShader,
     fragmentShader,
+    uniforms: {
+      lightDir: { value: [0.0, 0.0, 0.0] },
+      uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+    },
   });
+
   const cube = new THREE.Mesh(geometry, material);
-  app.attachTo(container.value);
   app.addMesh(cube);
-  app.orbitControls();
 
   function animate() {
-    requestAnimationFrame(animate);
+    requestAnimationFrame(() => animate());
     app.update();
   }
-  animate();
+
+  animate(app);
 
   onUnmounted(() => {
     app.dispose();
