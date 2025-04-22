@@ -1,0 +1,15 @@
+{
+  "scripts": {
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
+  },
+  "dependencies": {
+    "@types/three": "^0.175.0",
+    "three": "^0.175.0",
+    "three-orbitcontrols": "^2.110.3"
+  },
+  "devDependencies": {
+    "vitepress": "^1.6.3"
+  }
+}
