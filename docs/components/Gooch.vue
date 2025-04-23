@@ -70,7 +70,7 @@ onMounted(async () => {
   });
 
   btn.on("click", () => {
-    PARAMS.warmColor = "#ff0000";
+    PARAMS.warmColor = "#ff5252";
     PARAMS.coolColor = "#0000ff";
     PARAMS.surfaceColor = "#000000";
     pane.refresh();
@@ -105,7 +105,6 @@ onMounted(async () => {
 .three-container {
   width: 100%;
   height: 400px;
-  border: 1px solid #eee;
   margin: 1rem 0;
 }
 

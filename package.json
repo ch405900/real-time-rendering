@@ -5,10 +5,11 @@
     "docs:preview": "vitepress preview docs"
   },
   "dependencies": {
+    "@tweakpane/core": "^2.0.5",
     "@types/three": "^0.175.0",
+    "markdown-it-mathjax3": "^4.3.2",
     "three": "^0.175.0",
     "three-orbitcontrols": "^2.110.3",
-    "@tweakpane/core": "^2.0.5",
     "tweakpane": "^4.0.5"
   },
   "devDependencies": {
