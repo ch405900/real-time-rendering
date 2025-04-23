@@ -91,6 +91,19 @@ export default class Application {
         this.scene.add(gizmo);
     }
 
+
+    run(cb: (() => void) | undefined = undefined) {
+        const animate = () => {
+            requestAnimationFrame(animate);
+            this.update();
+            if (cb) {
+                cb();
+            }
+        };
+        animate();
+    }
+
+
     update() {
         this.orbit?.update();
         this.renderer.render(this.scene, this.camera);

@@ -1,15 +1,40 @@
 <template>
-  <div ref="container" class="three-container"></div>
+  <div ref="mainContainer" class="main-container">
+    <!-- 你的 three.js 内容或 canvas 保持不变 -->
+    <div ref="container" class="three-container"></div>
+
+    <!-- 新增的浮动层 -->
+    <div ref="paneOverlay" class="tweakpane-overlay"></div>
+  </div>
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted } from "vue";
 import * as THREE from "three";
 import { ApplicationBuilder } from "./application";
+import { Pane } from "tweakpane";
 
+const mainContainer = ref(null);
 const container = ref(null);
+const paneOverlay = ref(null);
 
 onMounted(async () => {
+  const PARAMS = {
+    factor: 123,
+    title: "hello",
+    color: "#ff0055",
+  };
+
+  const pane = new Pane({
+    container: paneOverlay.value,
+    title: "Shader Parameters",
+  });
+  pane.element.style.width = "300px";
+
+  pane.addBinding(PARAMS, "factor");
+  pane.addBinding(PARAMS, "title");
+  pane.addBinding(PARAMS, "color");
+
   const builder = new ApplicationBuilder(container.value);
   builder.orbitControls().transformControls();
   const app = builder.build();
@@ -37,12 +62,7 @@ onMounted(async () => {
   const cube = new THREE.Mesh(geometry, material);
   app.addMesh(cube);
 
-  function animate() {
-    requestAnimationFrame(() => animate());
-    app.update();
-  }
-
-  animate(app);
+  app.run();
 
   onUnmounted(() => {
     app.dispose();
@@ -51,10 +71,25 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+.main-container {
+  width: 100%;
+  height: 400px;
+  position: relative;
+}
+
 .three-container {
   width: 100%;
   height: 400px;
   border: 1px solid #eee;
   margin: 1rem 0;
+}
+
+.tweakpane-overlay {
+  /* position: fixed; */
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 100;
+  pointer-events: auto;
 }
 </style>
