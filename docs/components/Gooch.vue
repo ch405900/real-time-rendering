@@ -19,22 +19,6 @@ const container = ref(null);
 const paneOverlay = ref(null);
 
 onMounted(async () => {
-  const PARAMS = {
-    warmColor: "#ff0000",
-    coolColor: "#0000ff",
-    surfaceColor: "#000000",
-  };
-
-  const pane = new Pane({
-    container: paneOverlay.value,
-    title: "Shader Parameters",
-  });
-  pane.element.style.width = "300px";
-
-  pane.addBinding(PARAMS, "warmColor");
-  pane.addBinding(PARAMS, "coolColor");
-  pane.addBinding(PARAMS, "surfaceColor");
-
   const builder = new ApplicationBuilder(container.value);
   builder.orbitControls().transformControls();
   const app = builder.build();
@@ -62,6 +46,36 @@ onMounted(async () => {
       warmColor: { value: new THREE.Color(0xff0000) },
       surfaceColor: { value: new THREE.Color(0x000000) },
     },
+  });
+
+  const PARAMS = {
+    warmColor: "#ff0000",
+    coolColor: "#0000ff",
+    surfaceColor: "#000000",
+  };
+
+  const pane = new Pane({
+    container: paneOverlay.value,
+    title: "Gooch Shader Parameters",
+  });
+
+  pane.element.style.width = "300px";
+
+  pane.addBinding(PARAMS, "warmColor");
+  pane.addBinding(PARAMS, "coolColor");
+  pane.addBinding(PARAMS, "surfaceColor");
+
+  const btn = pane.addButton({
+    title: "Reset",
+  });
+
+  btn.on("click", () => {
+    PARAMS.warmColor = "#ff0000";
+    PARAMS.coolColor = "#0000ff";
+    PARAMS.surfaceColor = "#000000";
+    pane.refresh();
+    // reset geometry transform
+    app.reset();
   });
 
   pane.on("change", () => {

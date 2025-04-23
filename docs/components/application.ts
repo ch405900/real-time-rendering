@@ -35,6 +35,7 @@ export class ApplicationBuilder {
         const app = new Application(this.container, this.config.enableOrbitControls, this.config.enableTransformControls);
         return app;
     }
+
 }
 
 
@@ -112,6 +113,25 @@ export default class Application {
     addMesh(mesh: THREE.Mesh) {
         this.scene.add(mesh);
         this.transformControl?.attach(mesh)
+    }
+
+    private resetTransform(mesh) {
+        mesh.position.set(0, 0, 0);
+        mesh.rotation.set(0, 0, 0);
+        mesh.scale.set(1, 1, 1);
+        mesh.updateMatrixWorld(true);
+    }
+
+    reset() {
+        this.orbit?.reset();
+        this.transformControl?.reset();
+        this.camera.position.set(0, 0, 2);
+        this.scene.traverse(obj => {
+            if ((obj as THREE.Mesh).isMesh) {
+                const mesh = obj as THREE.Mesh;
+                this.resetTransform(mesh);
+            }
+        });
     }
 
     dispose() {

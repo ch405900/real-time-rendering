@@ -4,7 +4,9 @@ outline: deep
 # Shading Basics 着色基础
 
 <script setup>
-import ThreeJSShader from './components/ThreeJSShader.vue'
+import Gooch from './components/Gooch.vue'
 </script>
 
-<ThreeJSShader />
+## Gooch 着色
+
+<Gooch />
