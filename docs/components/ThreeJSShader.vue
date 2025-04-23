@@ -20,9 +20,9 @@ const paneOverlay = ref(null);
 
 onMounted(async () => {
   const PARAMS = {
-    factor: 123,
-    title: "hello",
-    color: "#ff0055",
+    warmColor: "#ff0000",
+    coolColor: "#0000ff",
+    surfaceColor: "#000000",
   };
 
   const pane = new Pane({
@@ -31,17 +31,19 @@ onMounted(async () => {
   });
   pane.element.style.width = "300px";
 
-  pane.addBinding(PARAMS, "factor");
-  pane.addBinding(PARAMS, "title");
-  pane.addBinding(PARAMS, "color");
+  pane.addBinding(PARAMS, "warmColor");
+  pane.addBinding(PARAMS, "coolColor");
+  pane.addBinding(PARAMS, "surfaceColor");
 
   const builder = new ApplicationBuilder(container.value);
   builder.orbitControls().transformControls();
   const app = builder.build();
   const geometry = new THREE.BoxGeometry();
 
-  const vertexShader = await import("../shaders/vertex.glsl?raw").then((m) => m.default);
-  const fragmentShader = await import("../shaders/fragment.glsl?raw").then(
+  const vertexShader = await import("../shaders/chapter5/gooch_vertex.glsl?raw").then(
+    (m) => m.default
+  );
+  const fragmentShader = await import("../shaders/chapter5/gooch_fragment.glsl?raw").then(
     (m) => m.default
   );
 
@@ -54,9 +56,18 @@ onMounted(async () => {
     vertexShader,
     fragmentShader,
     uniforms: {
-      lightDir: { value: [0.0, 0.0, 0.0] },
       uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+      lightDirection: { value: new THREE.Vector3(0.0, 0.0, 1.0) },
+      coolColor: { value: new THREE.Color(0x0000ff) },
+      warmColor: { value: new THREE.Color(0xff0000) },
+      surfaceColor: { value: new THREE.Color(0x000000) },
     },
+  });
+
+  pane.on("change", () => {
+    material.uniforms.coolColor.value.set(PARAMS.coolColor);
+    material.uniforms.warmColor.value.set(PARAMS.warmColor);
+    material.uniforms.surfaceColor.value.set(PARAMS.surfaceColor);
   });
 
   const cube = new THREE.Mesh(geometry, material);
