@@ -72,6 +72,8 @@ export default class Application {
         this.camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
         this.renderer.setSize(container.clientWidth, container.clientHeight);
         this.camera.position.z = 2;
+        this.camera.position.y = 2;
+        this.camera.position.x = 2;
         container.appendChild(this.renderer.domElement);
     }
 

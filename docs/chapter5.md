@@ -5,9 +5,10 @@ outline: deep
 
 <script setup>
 import Gooch from './components/Gooch.vue'
+import Lambertian from './components/Lambertian.vue'
 </script>
 
-## Gooch 着色模型
+## 5.1着色模型
 Gooch 着色模型被设计用于增加技术插图（工程制图）中细节的易读性。
 
 $$
@@ -29,3 +30,13 @@ $$
 :::
 
 <Gooch />
+
+## 5.2 光照
+
+Lambertian模型可以用于对理想漫反射表面的着色，例如完美的哑光表面等
+
+$$
+\mathbf{c}_{\text {shaded }}=f_{\text {unlit }}(\mathbf{n}, \mathbf{v})+\sum_{i=1}^{n}\left(\mathbf{l}_{i} \cdot \mathbf{n}\right)^{+} \mathbf{c}_{\text {light }_{i}} \mathbf{c}_{\text {surface }}
+$$
+
+<Lambertian />
