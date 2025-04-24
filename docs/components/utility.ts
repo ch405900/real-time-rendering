@@ -23,3 +23,10 @@ export function isWebG2LSupported() {
     return false;
   }
 }
+
+export function loadShader(shaderSource: string) {
+  const [vertexRaw, fragmentRaw] = shaderSource.split('// -- fragment')
+  const vertex = vertexRaw.replace('// -- vertex', '').trim()
+  const fragment = fragmentRaw.trim()
+  return { vertexShader: vertex, fragmentShader: fragment }
+}

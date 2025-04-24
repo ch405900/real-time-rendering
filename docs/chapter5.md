@@ -25,8 +25,7 @@ $$
 
 ::: code-group
 <!-- 文件名默认用作标题 -->
-<<< ./shaders/chapter5/gooch_fragment.glsl{glsl}
-<<< ./shaders/chapter5/gooch_vertex.glsl{glsl}
+<<< ./shaders/chapter5/gooch.glsl{glsl}
 :::
 
 <Gooch />
@@ -39,4 +38,13 @@ $$
 \mathbf{c}_{\text {shaded }}=f_{\text {unlit }}(\mathbf{n}, \mathbf{v})+\sum_{i=1}^{n}\left(\mathbf{l}_{i} \cdot \mathbf{n}\right)^{+} \mathbf{c}_{\text {light }_{i}} \mathbf{c}_{\text {surface }}
 $$
 
+::: code-group
+<!-- 文件名默认用作标题 -->
+<<< ./shaders/chapter5/lambertian_fragment.glsl{glsl}
+<<< ./shaders/chapter5/lambertian_vertex.glsl{glsl}
+:::
+
 <Lambertian />
+
+
+## 5.3 实现着色模型

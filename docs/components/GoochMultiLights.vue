@@ -13,16 +13,15 @@ import { ref, onMounted, onUnmounted } from "vue";
 import * as THREE from "three";
 import { ApplicationBuilder } from "./application";
 import { Pane } from "tweakpane";
-import { isWebGL2Supported, loadShader } from "./utility";
+import { isWebGL2Supported } from "./utility";
 
 const mainContainer = ref(null);
 const container = ref(null);
 const paneOverlay = ref(null);
 const supportedWebGL2 = ref(false);
 
-const defaultWarmColor = new THREE.Color(0.3, 0.3, 0.0);
-const defaultCoolColor = new THREE.Color(0.0, 0.0, 0.55);
-const defaultSurfaceColor = new THREE.Color(0x000000);
+const defaultLightColor = new THREE.Color(0xffffff);
+const defaultSurfaceColor = new THREE.Color(0xd7d7d7);
 
 onMounted(async () => {
   supportedWebGL2.value = isWebGL2Supported();
@@ -33,67 +32,83 @@ onMounted(async () => {
   const app = builder.orbitControls(true).transformControls(true).build();
   const geometry = new THREE.BoxGeometry();
 
-  const shaderSource = await import("../shaders/chapter5/gooch.glsl?raw").then(
-    (m) => m.default
-  );
-  const shader = loadShader(shaderSource);
+  const vertexShader = await import(
+    "../shaders/chapter5/lambertian_vertex.glsl?raw"
+  ).then((m) => m.default);
+  const fragmentShader = await import(
+    "../shaders/chapter5/lambertian_fragment.glsl?raw"
+  ).then((m) => m.default);
+
   const material = new THREE.ShaderMaterial({
     glslVersion: THREE.GLSL3,
     defines: {
       USE_UV: false,
       USE_COLOR: false,
     },
-    vertexShader: shader.vertexShader,
-    fragmentShader: shader.fragmentShader,
+    vertexShader,
+    fragmentShader,
     uniforms: {
       uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
-      lightDirection: { value: new THREE.Color(0.0, 0.0, 1.0) },
-      warmColor: { value: defaultWarmColor },
-      coolColor: { value: defaultCoolColor },
+      lightDirection: { value: new THREE.Vector3(1.0, 1.0, 1.0) },
+      lightColor: { value: defaultLightColor },
       surfaceColor: { value: defaultSurfaceColor },
     },
   });
 
   const PARAMS = {
-    warmColor: "#" + defaultWarmColor.getHexString(),
-    coolColor: "#" + defaultCoolColor.getHexString(),
+    lightColor: "#" + defaultLightColor.getHexString(),
     surfaceColor: "#" + defaultSurfaceColor.getHexString(),
+    speed: 0.001,
   };
 
   const pane = new Pane({
     container: paneOverlay.value,
-    title: "Gooch Shader Parameters",
+    title: "Lambertian Shader Parameters",
   });
 
   pane.element.style.width = "300px";
 
-  pane.addBinding(PARAMS, "warmColor");
-  pane.addBinding(PARAMS, "coolColor");
+  pane.addBinding(PARAMS, "lightColor");
   pane.addBinding(PARAMS, "surfaceColor");
+  pane.addBinding(PARAMS, "speed");
 
   const btn = pane.addButton({
     title: "Reset",
   });
 
   btn.on("click", () => {
-    PARAMS.warmColor = "#" + defaultWarmColor.getHexString();
-    PARAMS.coolColor = "#" + defaultCoolColor.getHexString();
+    PARAMS.lightColor = "#" + defaultLightColor.getHexString();
     PARAMS.surfaceColor = "#" + defaultSurfaceColor.getHexString();
+    PARAMS.speed = 0.001;
     pane.refresh();
     // reset geometry transform
     app.reset();
+    lightCube.position.set(2, 2, 2);
   });
 
   pane.on("change", () => {
-    material.uniforms.coolColor.value.set(PARAMS.coolColor);
-    material.uniforms.warmColor.value.set(PARAMS.warmColor);
+    material.uniforms.lightColor.value.set(PARAMS.lightColor);
     material.uniforms.surfaceColor.value.set(PARAMS.surfaceColor);
   });
 
   const cube = new THREE.Mesh(geometry, material);
+
+  const lightGeometry = new THREE.BoxGeometry();
+
+  const lightCube = new THREE.Mesh(lightGeometry);
+  lightCube.position.set(2, 2, 2);
+  app.addMesh(lightCube);
   app.addMesh(cube);
 
-  app.run();
+  let theta = 0.0;
+  const r = 2;
+  app.run(() => {
+    theta += PARAMS.speed;
+    let x = Math.cos(theta) * r;
+    let y = Math.sin(theta) * r;
+    lightCube.position.set(x, r, y);
+    material.uniforms.lightDirection.value.copy(lightCube.position);
+  });
 
   onUnmounted(() => {
     app.dispose();

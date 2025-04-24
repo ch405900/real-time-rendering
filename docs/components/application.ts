@@ -126,7 +126,7 @@ export default class Application {
     reset() {
         this.orbit?.reset();
         this.transformControl?.reset();
-        this.camera.position.set(0, 0, 2);
+        this.camera.position.set(2, 2, 2);
         this.scene.traverse(obj => {
             if ((obj as THREE.Mesh).isMesh) {
                 const mesh = obj as THREE.Mesh;
