@@ -18,12 +18,12 @@ void main() {
 
   float NL = max(dot(N, L), 0.0);
   // Gooch shading
-  vec3 kCool = coolColor + surfaceColor * 0.25;
-  vec3 kWarm = warmColor + surfaceColor * 0.25;
+  vec3 cCool = coolColor + surfaceColor * 0.25;
+  vec3 cWarm = warmColor + surfaceColor * 0.25;
   vec3 highlight = vec3(1.0,1.0,1.0);
   float t = (NL + 1.0)/2.0;
   vec3 r = 2.0 * NL * N - L;
   float s = max(dot(r, vViewPosition), 0.0);
-  vec3 gooch = s * highlight + (1.0 - s) * (t*kWarm + (1.0-t)*kCool);
+  vec3 gooch = clamp(s * highlight + (1.0 - s) * (t*cWarm + (1.0-t)*cCool),0.0,1.0);
   fragColor = vec4(gooch, 1.0);
 }

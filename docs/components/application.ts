@@ -21,13 +21,13 @@ export class ApplicationBuilder {
         this.container = container;
     }
 
-    orbitControls() {
-        this.config.enableOrbitControls = true;
+    orbitControls(enable: boolean) {
+        this.config.enableOrbitControls = enable;
         return this;
     }
 
-    transformControls() {
-        this.config.enableTransformControls = true;
+    transformControls(enable: boolean) {
+        this.config.enableTransformControls = enable;
         return this;
     }
 
@@ -59,7 +59,6 @@ export default class Application {
             });
         }
         console.log(this.renderer.getContext().getParameter(this.renderer.getContext().VERSION));
-        console.log(container);
         this.attachTo(container);
         if (enableOrbitControls) {
             this.orbitControls();
@@ -72,12 +71,12 @@ export default class Application {
     private attachTo(container: HTMLElement) {
         this.camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
         this.renderer.setSize(container.clientWidth, container.clientHeight);
+        this.camera.position.z = 2;
         container.appendChild(this.renderer.domElement);
     }
 
     private orbitControls() {
         this.orbit = new OrbitControls(this.camera, this.renderer.domElement);
-        this.camera.position.z = 2;
     }
 
     private transformControls() {

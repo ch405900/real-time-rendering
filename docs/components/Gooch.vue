@@ -1,10 +1,10 @@
 <template>
   <div ref="mainContainer" class="main-container">
-    <!-- 你的 three.js 内容或 canvas 保持不变 -->
     <div ref="container" class="three-container"></div>
-
-    <!-- 新增的浮动层 -->
     <div ref="paneOverlay" class="tweakpane-overlay"></div>
+    <div v-if="!supportedWebGL2" class="overlay-mask">
+      <div class="mask-message">抱歉，您的浏览器不支持 WebGL2。</div>
+    </div>
   </div>
 </template>
 
@@ -13,15 +13,24 @@ import { ref, onMounted, onUnmounted } from "vue";
 import * as THREE from "three";
 import { ApplicationBuilder } from "./application";
 import { Pane } from "tweakpane";
+import { isWebGL2Supported } from "./utility";
 
 const mainContainer = ref(null);
 const container = ref(null);
 const paneOverlay = ref(null);
+const supportedWebGL2 = ref(false);
+
+const defaultWarmColor = new THREE.Color(0.3, 0.3, 0.0);
+const defaultCoolColor = new THREE.Color(0.0, 0.0, 0.55);
+const defaultSurfaceColor = new THREE.Color(0x000000);
 
 onMounted(async () => {
+  supportedWebGL2.value = isWebGL2Supported();
+  if (supportedWebGL2 == false) {
+    return;
+  }
   const builder = new ApplicationBuilder(container.value);
-  builder.orbitControls().transformControls();
-  const app = builder.build();
+  const app = builder.orbitControls(true).transformControls(true).build();
   const geometry = new THREE.BoxGeometry();
 
   const vertexShader = await import("../shaders/chapter5/gooch_vertex.glsl?raw").then(
@@ -32,7 +41,7 @@ onMounted(async () => {
   );
 
   const material = new THREE.ShaderMaterial({
-    glslVersion: app.isWebGL2() ? THREE.GLSL3 : THREE.GLSL1,
+    glslVersion: THREE.GLSL3,
     defines: {
       USE_UV: false,
       USE_COLOR: false,
@@ -41,17 +50,17 @@ onMounted(async () => {
     fragmentShader,
     uniforms: {
       uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
-      lightDirection: { value: new THREE.Vector3(0.0, 0.0, 1.0) },
-      coolColor: { value: new THREE.Color(0x0000ff) },
-      warmColor: { value: new THREE.Color(0xff0000) },
-      surfaceColor: { value: new THREE.Color(0x000000) },
+      lightDirection: { value: new THREE.Color(0.0, 0.0, 1.0) },
+      warmColor: { value: defaultWarmColor },
+      coolColor: { value: defaultCoolColor },
+      surfaceColor: { value: defaultSurfaceColor },
     },
   });
 
   const PARAMS = {
-    warmColor: "#ff0000",
-    coolColor: "#0000ff",
-    surfaceColor: "#000000",
+    warmColor: "#" + defaultWarmColor.getHexString(),
+    coolColor: "#" + defaultCoolColor.getHexString(),
+    surfaceColor: "#" + defaultSurfaceColor.getHexString(),
   };
 
   const pane = new Pane({
@@ -70,9 +79,9 @@ onMounted(async () => {
   });
 
   btn.on("click", () => {
-    PARAMS.warmColor = "#ff5252";
-    PARAMS.coolColor = "#0000ff";
-    PARAMS.surfaceColor = "#000000";
+    PARAMS.warmColor = "#" + defaultWarmColor.getHexString();
+    PARAMS.coolColor = "#" + defaultCoolColor.getHexString();
+    PARAMS.surfaceColor = "#" + defaultSurfaceColor.getHexString();
     pane.refresh();
     // reset geometry transform
     app.reset();
@@ -115,5 +124,24 @@ onMounted(async () => {
   right: 10px;
   z-index: 100;
   pointer-events: auto;
+}
+
+.overlay-mask {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  font-size: 1.2em;
+}
+
+.mask-message {
+  padding: 1em 2em;
+  background: rgba(0, 0, 0, 0.85);
+  border-radius: 8px;
+  border: 1px solid #fff;
 }
 </style>
