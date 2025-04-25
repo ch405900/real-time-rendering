@@ -6,6 +6,7 @@ outline: deep
 <script setup>
 import Gooch from './components/Gooch.vue'
 import Lambertian from './components/Lambertian.vue'
+import GoochMultiLights from './components/GoochMultiLights.vue'
 </script>
 
 ## 5.1着色模型
@@ -40,11 +41,15 @@ $$
 
 ::: code-group
 <!-- 文件名默认用作标题 -->
-<<< ./shaders/chapter5/lambertian_fragment.glsl{glsl}
-<<< ./shaders/chapter5/lambertian_vertex.glsl{glsl}
+<<< ./shaders/chapter5/lambertian.glsl{glsl}
 :::
 
 <Lambertian />
 
 
 ## 5.3 实现着色模型
+多光源Gooch示例
+
+<<< ./shaders/chapter5/gooch_multi_lights.glsl{glsl}
+
+<GoochMultiLights/>

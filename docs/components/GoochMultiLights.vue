@@ -13,15 +13,15 @@ import { ref, onMounted, onUnmounted } from "vue";
 import * as THREE from "three";
 import { ApplicationBuilder } from "./application";
 import { Pane } from "tweakpane";
-import { isWebGL2Supported } from "./utility";
+import { isWebGL2Supported, loadShader } from "./utility";
 
 const mainContainer = ref(null);
 const container = ref(null);
 const paneOverlay = ref(null);
 const supportedWebGL2 = ref(false);
 
-const defaultLightColor = new THREE.Color(0xffffff);
 const defaultSurfaceColor = new THREE.Color(0xd7d7d7);
+const defaultWarmColor = new THREE.Color(0.3, 0.3, 0.0);
 
 onMounted(async () => {
   supportedWebGL2.value = isWebGL2Supported();
@@ -29,15 +29,30 @@ onMounted(async () => {
     return;
   }
   const builder = new ApplicationBuilder(container.value);
-  const app = builder.orbitControls(true).transformControls(true).build();
+  const app = builder.orbitControls(true).transformControls(false).build();
   const geometry = new THREE.BoxGeometry();
 
-  const vertexShader = await import(
-    "../shaders/chapter5/lambertian_vertex.glsl?raw"
+  const shaderSource = await import(
+    "../shaders/chapter5/gooch_multi_lights.glsl?raw"
   ).then((m) => m.default);
-  const fragmentShader = await import(
-    "../shaders/chapter5/lambertian_fragment.glsl?raw"
-  ).then((m) => m.default);
+  const shader = loadShader(shaderSource);
+
+  const uLights = {
+    value: [
+      {
+        position: new THREE.Vector4(1, 2, 1, 1),
+        color: new THREE.Vector4(1, 0, 0, 1),
+      },
+      {
+        position: new THREE.Vector4(1, 1, 2, 1),
+        color: new THREE.Vector4(0, 1, 0, 1),
+      },
+      {
+        position: new THREE.Vector4(2, 1, 1, 1),
+        color: new THREE.Vector4(0, 0, 1, 1),
+      },
+    ],
+  };
 
   const material = new THREE.ShaderMaterial({
     glslVersion: THREE.GLSL3,
@@ -45,19 +60,21 @@ onMounted(async () => {
       USE_UV: false,
       USE_COLOR: false,
     },
-    vertexShader,
-    fragmentShader,
+    vertexShader: shader.vertexShader,
+    fragmentShader: shader.fragmentShader,
     uniforms: {
       uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
-      lightDirection: { value: new THREE.Vector3(1.0, 1.0, 1.0) },
-      lightColor: { value: defaultLightColor },
-      surfaceColor: { value: defaultSurfaceColor },
+      surfaceColor: { value: new THREE.Color(defaultSurfaceColor) },
+      warmColor: { value: new THREE.Color(defaultWarmColor) },
+      uFUnlit: { value: new THREE.Color(defaultSurfaceColor) },
+      uLights: uLights,
+      uLightCount: { value: 3 },
     },
   });
 
   const PARAMS = {
-    lightColor: "#" + defaultLightColor.getHexString(),
     surfaceColor: "#" + defaultSurfaceColor.getHexString(),
+    warmColor: "#" + defaultWarmColor.getHexString(),
     speed: 0.001,
   };
 
@@ -68,8 +85,8 @@ onMounted(async () => {
 
   pane.element.style.width = "300px";
 
-  pane.addBinding(PARAMS, "lightColor");
   pane.addBinding(PARAMS, "surfaceColor");
+  pane.addBinding(PARAMS, "warmColor");
   pane.addBinding(PARAMS, "speed");
 
   const btn = pane.addButton({
@@ -77,37 +94,30 @@ onMounted(async () => {
   });
 
   btn.on("click", () => {
-    PARAMS.lightColor = "#" + defaultLightColor.getHexString();
     PARAMS.surfaceColor = "#" + defaultSurfaceColor.getHexString();
+    PARAMS.warmColor = "#" + defaultWarmColor.getHexString();
     PARAMS.speed = 0.001;
     pane.refresh();
     // reset geometry transform
     app.reset();
-    lightCube.position.set(2, 2, 2);
   });
 
   pane.on("change", () => {
-    material.uniforms.lightColor.value.set(PARAMS.lightColor);
-    material.uniforms.surfaceColor.value.set(PARAMS.surfaceColor);
+    material.uniforms.warmColor.value.set(PARAMS.warmColor);
+    material.uniforms.uFUnlit.value.set(PARAMS.surfaceColor);
   });
 
   const cube = new THREE.Mesh(geometry, material);
 
-  const lightGeometry = new THREE.BoxGeometry();
-
-  const lightCube = new THREE.Mesh(lightGeometry);
-  lightCube.position.set(2, 2, 2);
-  app.addMesh(lightCube);
   app.addMesh(cube);
 
   let theta = 0.0;
   const r = 2;
   app.run(() => {
     theta += PARAMS.speed;
-    let x = Math.cos(theta) * r;
-    let y = Math.sin(theta) * r;
-    lightCube.position.set(x, r, y);
-    material.uniforms.lightDirection.value.copy(lightCube.position);
+    cube.rotation.x = theta;
+    cube.rotation.y = theta;
+    cube.rotation.z = theta;
   });
 
   onUnmounted(() => {
