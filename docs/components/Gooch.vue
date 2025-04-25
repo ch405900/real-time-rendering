@@ -48,9 +48,9 @@ onMounted(async () => {
     uniforms: {
       uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
       lightDirection: { value: new THREE.Color(0.0, 0.0, 1.0) },
-      warmColor: { value: defaultWarmColor },
-      coolColor: { value: defaultCoolColor },
-      surfaceColor: { value: defaultSurfaceColor },
+      warmColor: { value: new THREE.Color(defaultWarmColor) },
+      coolColor: { value: new THREE.Color(defaultCoolColor) },
+      surfaceColor: { value: new THREE.Color(defaultSurfaceColor) },
     },
   });
 

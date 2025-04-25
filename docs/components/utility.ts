@@ -17,16 +17,16 @@ export function isWebGL2Supported() {
  */
 export function isWebG2LSupported() {
   try {
-    const canvas = document.createElement('canvas');
-    return !!(canvas.getContext('webgl2'));
+    const canvas = document.createElement("canvas");
+    return !!canvas.getContext("webgl2");
   } catch (e) {
     return false;
   }
 }
 
 export function loadShader(shaderSource: string) {
-  const [vertexRaw, fragmentRaw] = shaderSource.split('// -- fragment')
-  const vertex = vertexRaw.replace('// -- vertex', '').trim()
-  const fragment = fragmentRaw.trim()
-  return { vertexShader: vertex, fragmentShader: fragment }
+  const [vertexRaw, fragmentRaw] = shaderSource.split("// -- fragment");
+  const vertex = vertexRaw.replace("// -- vertex", "").trim();
+  const fragment = fragmentRaw.trim();
+  return { vertexShader: vertex, fragmentShader: fragment };
 }

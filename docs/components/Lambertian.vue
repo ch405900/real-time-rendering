@@ -13,8 +13,7 @@ import { ref, onMounted, onUnmounted } from "vue";
 import * as THREE from "three";
 import { ApplicationBuilder } from "./application";
 import { Pane } from "tweakpane";
-import { isWebGL2Supported } from "./utility";
-import { cos } from "three/tsl";
+import { isWebGL2Supported, loadShader } from "./utility";
 
 const mainContainer = ref(null);
 const container = ref(null);
@@ -33,26 +32,23 @@ onMounted(async () => {
   const app = builder.orbitControls(true).transformControls(true).build();
   const geometry = new THREE.BoxGeometry();
 
-  const vertexShader = await import(
-    "../shaders/chapter5/lambertian_vertex.glsl?raw"
-  ).then((m) => m.default);
-  const fragmentShader = await import(
-    "../shaders/chapter5/lambertian_fragment.glsl?raw"
-  ).then((m) => m.default);
-
+  const shaderSource = await import("../shaders/chapter5/lambertian.glsl?raw").then(
+    (m) => m.default
+  );
+  const shader = loadShader(shaderSource);
   const material = new THREE.ShaderMaterial({
     glslVersion: THREE.GLSL3,
     defines: {
       USE_UV: false,
       USE_COLOR: false,
     },
-    vertexShader,
-    fragmentShader,
+    vertexShader: shader.vertexShader,
+    fragmentShader: shader.fragmentShader,
     uniforms: {
       uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
       lightDirection: { value: new THREE.Vector3(1.0, 1.0, 1.0) },
-      lightColor: { value: defaultLightColor },
-      surfaceColor: { value: defaultSurfaceColor },
+      lightColor: { value: new THREE.Color(defaultLightColor) },
+      surfaceColor: { value: new THREE.Color(defaultSurfaceColor) },
     },
   });
 
