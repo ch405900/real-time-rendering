@@ -18,7 +18,8 @@ export default defineConfig({
 				text: 'Examples',
 				items: [
 					{ text: 'Markdown Examples', link: '/markdown-examples' },
-					{ text: 'Shading Basics 着色基础', link: '/chapter5' }
+					{ text: 'Shading Basics 着色基础', link: '/chapter5' },
+					{ text: 'Texturing 纹理', link: '/chapter6' }
 				]
 			}
 		],
@@ -28,7 +29,7 @@ export default defineConfig({
 		]
 	},
 	vite: {
-		assetsInclude: ['**/*.glsl'], // 允许导入 .glsl 文件
+		assetsInclude: ['**/*.glsl','**/*.exr'], // 允许导入 .glsl 文件
 	},
 	markdown: {
 		config: (md) => {
