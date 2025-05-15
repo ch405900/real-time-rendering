@@ -27,7 +27,7 @@ out vec4 fragColor;
 
 void main() {
 // 获取当前高度值
-  float height = texture(heightMap, vUv).r;
+  float height = texture(heightMap, vUv.yx).r;
 
   // 从 vViewPosition 估算观察方向（片元 → 摄像机方向）
   vec3 viewDir = normalize(vViewPosition);
@@ -36,10 +36,11 @@ void main() {
   vec2 offset = viewDir.xy * (height * heightScale);
 
   // 对 UV 进行偏移
-  vec2 displacedUv = vUv - offset;
+  vec2 displacedUv = vUv - offset.xy;
 
   // 采样颜色贴图
-  vec4 color = texture(diffuseMap, displacedUv);
-
+  vec4 color;
+   if(vUv.x > 0.5) color = texture(diffuseMap, displacedUv); else color = texture(heightMap, vUv);
+color = texture(diffuseMap, displacedUv);
   fragColor = vec4(color.rgb, 1.0);
 }
