@@ -119,6 +119,10 @@ onMounted(async () => {
   const plane = new THREE.Mesh(geometry, material);
   app.addMesh(plane);
 
+  app.camera.position.z = 1;
+  app.camera.position.y = 0;
+  app.camera.position.x = 0;
+
   app.run();
 
   onUnmounted(() => {

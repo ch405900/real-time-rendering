@@ -34,7 +34,7 @@ void main() {
 
   // inCenter将vUv限制在[0.25,0.75]
   vec2 scaledUv = (vUv - uvMin) * 2.0;
-    // 此时的scaledUv则是[0,1]
+  // 此时的scaledUv则是[0,1]
   float borderReplace = (1.0 - float(inCenter)) * useBorder;
   fragColor = mix(texture2D(diffuseMap, scaledUv), borderColor, borderReplace);
 }

@@ -38,3 +38,7 @@ border,clamp to border  | 位于[0,1]范围外的纹理坐标所采样到的值�
 > [!IMPORTANT] three.js中没有border模式, 下面的border效果实为模拟效果
  
 <TexturingCorresponder/>
+
+::: code-group
+<<< ./shaders/chapter6/texture_uv_corresponder_func.glsl{glsl}
+:::
