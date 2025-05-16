@@ -12,13 +12,13 @@ export function isWebGL2Supported() {
 }
 
 /**
- * Check if browser supports WebGL2
- * @returns true if the browser supports WebGL2, false otherwise
+ * Check if browser supports WebGL
+ * @returns true if the browser supports WebGL, false otherwise
  */
-export function isWebG2LSupported() {
+export function isWebGLSupported() {
   try {
     const canvas = document.createElement("canvas");
-    return !!canvas.getContext("webgl2");
+    return !!canvas.getContext("webgl");
   } catch (e) {
     return false;
   }

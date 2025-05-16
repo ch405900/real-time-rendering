@@ -6,6 +6,7 @@ outline: deep
 import Texturing from './components/Texturing.vue'
 import TexturingUVTest from './components/TexturingUVTest.vue'
 import TexturingCorresponder from './components/TexturingCorresponder.vue'
+import TexturingMinMagMipmap from './components/TexturingMinMagMipmap.vue'
 import { ref } from 'vue'
 const showCode = ref(false)
 </script>
@@ -42,3 +43,8 @@ border,clamp to border  | 位于[0,1]范围外的纹理坐标所采样到的值�
 ::: code-group
 <<< ./shaders/chapter6/texture_uv_corresponder_func.glsl{glsl}
 :::
+
+## 放大和缩小
+
+左半部分使用Nearest, 右半部分使用Linear
+<TexturingMinMagMipmap/>
