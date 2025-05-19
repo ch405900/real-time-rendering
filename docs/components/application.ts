@@ -47,6 +47,7 @@ export default class Application {
     private transformControl: TransformControls | undefined = undefined;
     constructor(container: HTMLElement, enableOrbitControls: boolean, enableTransformControls: boolean) {
         this.scene = new THREE.Scene();
+        this.scene.background = new THREE.Color("skyblue");
         this.renderer = new THREE.WebGLRenderer();
         if (isWebGL2Supported()) {
             this.renderer = new THREE.WebGLRenderer({

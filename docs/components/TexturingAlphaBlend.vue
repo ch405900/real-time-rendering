@@ -1,0 +1,125 @@
+<template>
+  <div ref="mainContainer" class="main-container">
+    <div ref="container" class="three-container"></div>
+    <div ref="paneOverlay" class="tweakpane-overlay"></div>
+    <div v-if="!supportedWebGL2" class="overlay-mask">
+      <div class="mask-message">抱歉，您的浏览器不支持 WebGL2。</div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted, onUnmounted } from "vue";
+import * as THREE from "three";
+import { ApplicationBuilder } from "./application";
+import { isWebGL2Supported, loadShader } from "./utility";
+import { Pane } from "tweakpane";
+
+const mainContainer = ref(null);
+const container = ref(null);
+const paneOverlay = ref(null);
+const supportedWebGL2 = ref(false);
+
+onMounted(async () => {
+  supportedWebGL2.value = isWebGL2Supported();
+  if (supportedWebGL2 == false) {
+    return;
+  }
+  const builder = new ApplicationBuilder(container.value);
+  const app = builder.orbitControls(true).transformControls(false).build();
+  const geometry = new THREE.PlaneGeometry();
+
+  const shaderSource = await import(
+    "../shaders/chapter6/texture_alpha_blending.glsl?raw"
+  ).then((m) => m.default);
+  const shader = loadShader(shaderSource);
+
+  const loader = new THREE.TextureLoader();
+  const alphaTexture = loader.load(
+    "textures/tree-with-white-background.png",
+    (texture) => {
+      texture.minFilter = THREE.LinearFilter;
+      texture.magFilter = THREE.LinearFilter;
+      texture.generateMipmaps = false;
+      // 同步设置 material 后再添加到场景中
+    }
+  );
+
+  alphaTexture.wrapS = THREE.RepeatWrapping;
+  alphaTexture.wrapT = THREE.RepeatWrapping;
+
+  const material = new THREE.ShaderMaterial({
+    glslVersion: THREE.GLSL3,
+    defines: {
+      USE_UV: true,
+      USE_COLOR: false,
+    },
+    side: THREE.DoubleSide,
+    transparent: true, // 启用透明
+    depthWrite: false, // 避免深度冲突（透明物体建议关闭）
+    blending: THREE.NormalBlending, // 默认混合模式
+    vertexShader: shader.vertexShader,
+    fragmentShader: shader.fragmentShader,
+    uniforms: {
+      alphaTexture: { value: alphaTexture },
+    },
+  });
+  for (let i = 0; i < 3; i++) {
+    const plane = new THREE.Mesh(geometry, material);
+    plane.rotation.y = ((Math.PI * 2.0) / 3.0) * i;
+    app.addMesh(plane);
+  }
+
+  app.camera.position.z = 1;
+  app.camera.position.y = 0;
+  app.camera.position.x = 0;
+
+  app.run();
+
+  onUnmounted(() => {
+    app.dispose();
+  });
+});
+</script>
+
+<style scoped>
+.main-container {
+  width: 100%;
+  height: 400px;
+  position: relative;
+}
+
+.three-container {
+  width: 100%;
+  height: 400px;
+  margin: 1rem 0;
+}
+
+.tweakpane-overlay {
+  /* position: fixed; */
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 100;
+  pointer-events: auto;
+}
+
+.overlay-mask {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.75);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  font-size: 1.2em;
+}
+
+.mask-message {
+  padding: 1em 2em;
+  background: rgba(0, 0, 0, 0.85);
+  border-radius: 8px;
+  border: 1px solid #fff;
+}
+</style>

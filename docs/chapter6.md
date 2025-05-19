@@ -8,6 +8,7 @@ import TexturingUVTest from './components/TexturingUVTest.vue'
 import TexturingCorresponder from './components/TexturingCorresponder.vue'
 import TexturingMinMagMipmap from './components/TexturingMinMagMipmap.vue'
 import TexturingUVAnimation from './components/TexturingUVAnimation.vue'
+import TexturingAlphaBlend from './components/TexturingAlphaBlend.vue'
 import { ref } from 'vue'
 const showCode = ref(false)
 </script>
@@ -60,3 +61,17 @@ border,clamp to border  | 位于[0,1]范围外的纹理坐标所采样到的值�
 在UV一节中的基础上, 让纹理随着时间进行偏移.
 
 <TexturingUVAnimation />
+
+
+## 材质映射
+
+## Alpha映射
+
+![tree](./public/textures/tree-with-white-background.png)
+
+
+<TexturingAlphaBlend/>
+
+
+## 凹凸映射
+### Blinn方法
