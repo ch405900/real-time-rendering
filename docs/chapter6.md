@@ -7,6 +7,7 @@ import Texturing from './components/Texturing.vue'
 import TexturingUVTest from './components/TexturingUVTest.vue'
 import TexturingCorresponder from './components/TexturingCorresponder.vue'
 import TexturingMinMagMipmap from './components/TexturingMinMagMipmap.vue'
+import TexturingUVAnimation from './components/TexturingUVAnimation.vue'
 import { ref } from 'vue'
 const showCode = ref(false)
 </script>
@@ -48,3 +49,14 @@ border,clamp to border  | 位于[0,1]范围外的纹理坐标所采样到的值�
 
 左半部分使用Nearest, 右半部分使用Linear
 <TexturingMinMagMipmap/>
+
+
+## 程序化纹理
+
+
+
+## 纹理动画
+
+在UV一节中的基础上, 让纹理随着时间进行偏移.
+
+<TexturingUVAnimation />

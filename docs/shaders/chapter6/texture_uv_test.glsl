@@ -17,12 +17,13 @@ void main() {
 precision highp float;
 
 uniform sampler2D diffuseMap;
+uniform float time;
 
 in vec2 vUv;
 out vec4 fragColor;
 
 void main() {
   vec4 color;
-  color = texture(diffuseMap, vUv);
+  color = texture(diffuseMap, vUv + vec2(sin(time),0.0));
   fragColor = vec4(color.rgb, 1.0);
 }

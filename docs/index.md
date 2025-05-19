@@ -8,9 +8,6 @@ hero:
   tagline: My great project tagline
   actions:
     - theme: brand
-      text: Markdown Examples
-      link: /markdown-examples
-    - theme: alt
       text: Shading Basics 着色基础
       link: /chapter5
 

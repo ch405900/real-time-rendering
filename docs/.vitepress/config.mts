@@ -10,14 +10,13 @@ export default defineConfig({
 		// https://vitepress.dev/reference/default-theme-config
 		nav: [
 			{ text: 'Home', link: '/' },
-			{ text: 'Examples', link: '/markdown-examples' }
+			{ text: 'Contents', link: '/chapter5' }
 		],
 
 		sidebar: [
 			{
-				text: 'Examples',
+				text: 'Contents',
 				items: [
-					{ text: 'Markdown Examples', link: '/markdown-examples' },
 					{ text: 'Shading Basics 着色基础', link: '/chapter5' },
 					{ text: 'Texturing 纹理', link: '/chapter6' }
 				]
