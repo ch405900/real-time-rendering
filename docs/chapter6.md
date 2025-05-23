@@ -9,6 +9,7 @@ import TexturingCorresponder from './components/TexturingCorresponder.vue'
 import TexturingMinMagMipmap from './components/TexturingMinMagMipmap.vue'
 import TexturingUVAnimation from './components/TexturingUVAnimation.vue'
 import TexturingAlphaBlend from './components/TexturingAlphaBlend.vue'
+import TextureBlinn from './components/TextureBlinn.vue'
 import { ref } from 'vue'
 const showCode = ref(false)
 </script>
@@ -75,3 +76,8 @@ border,clamp to border  | 位于[0,1]范围外的纹理坐标所采样到的值�
 
 ## 凹凸映射
 ### Blinn方法
+Blinn于1978年提出使用凹凸贴图在不增加顶点的情况下,增加凹凸变化.凹凸贴图的内容通常是高度图.
+![heightmap](./public/textures/heightmap.png)
+<TextureBlinn />
+
+### 法线贴图
